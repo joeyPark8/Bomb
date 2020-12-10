@@ -1,0 +1,8 @@
+name: Bomb
+version: 1.0
+main: bomb.Main
+
+commands:
+  bomb:
+    usage: /<command> [target] [radius]
+    aliases: [bb]
