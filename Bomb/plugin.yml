@@ -6,3 +6,6 @@ commands:
   bomb:
     usage: /<command> [target] [radius]
     aliases: [bb]
+  getbomb:
+    usage: /<command> [count]
+    aliases: [gb]

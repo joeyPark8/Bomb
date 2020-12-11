@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,7 +31,7 @@ public class Main extends JavaPlugin {
                 sender.sendMessage("Let's explode!!!");
                 return false;
             }
-            else if (args[0].equalsIgnoreCase("all")) {
+            else if (args[0].equalsIgnoreCase("@all")) {
                 Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                 Bukkit.getServer().getOnlinePlayers().toArray(players);
 
@@ -46,12 +45,18 @@ public class Main extends JavaPlugin {
                 }
                 return false;
             }
-            else if (args[0].equalsIgnoreCase("random")) {
+            else if (args[0].equalsIgnoreCase("@local")) {
+                if (isInt(args[1])) {
+                    player.getWorld().createExplosion(player.getLocation(), Integer.parseInt(args[1]));
+                }
+                return false;
+            }
+            else if (args[0].equalsIgnoreCase("@random")) {
                 return false;
             }
             Player target = Bukkit.getPlayerExact(args[0]);
             if (target == null) {
-                player.sendMessage("Your target " + args[0] + " is not online");
+                player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
             }
             else {
                 if (isInt(args[1])) {
@@ -68,7 +73,7 @@ public class Main extends JavaPlugin {
             }
         }
         else if (command.getName().equalsIgnoreCase("getbomb")) {
-            
+            return false;
         }
         return true;
     }
@@ -86,15 +91,19 @@ public class Main extends JavaPlugin {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("bomb")) {
             if (args.length == 1) {
-                List<String> playerNames = new ArrayList<>();
+                List<String> targets = new ArrayList<>();
                 Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                 Bukkit.getServer().getOnlinePlayers().toArray(players);
 
                 for (int i = 0; i < players.length; i++) {
-                    playerNames.add(players[i].getName());
+                    targets.add(players[i].getName());
                 }
 
-                return playerNames;
+                targets.add("@all");
+                targets.add("@local");
+                targets.add("@random");
+
+                return targets;
             }
         }
         return null;
