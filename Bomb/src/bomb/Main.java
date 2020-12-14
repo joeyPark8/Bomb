@@ -228,11 +228,25 @@ public class Main extends JavaPlugin {
                                             target.sendMessage("code: " + args[3] + ", time: " + time + "seconds");
                                         }
                                     }
-                                    
+                                    time -= 1;
+                                }
+                                else {
+                                    if (args[0].equalsIgnoreCase("@all")) {
+
+                                    }
+                                    else if (args[0].equalsIgnoreCase("@local")) {
+
+                                    }
+                                    else if (args[0].equalsIgnoreCase("@random")) {
+
+                                    }
+                                    else {
+
+                                    }
                                 }
                             }
                         }
-                    }, 0l, 20l);
+                    }, 0l, (long) time * 20);
                 }
                 else {
                     sender.sendMessage(ChatColor.RED + "please write integer above 0");
