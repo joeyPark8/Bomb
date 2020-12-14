@@ -4,8 +4,11 @@ main: bomb.Main
 
 commands:
   bomb:
-    usage: /<command> [target] [radius]
+    usage: /<command> [type] [target] [power]
     aliases: [bb]
+  timebomb:
+    usage: /<command> [target] [time] [power] [text]
+    aliases: [tb]
   getbomb:
-    usage: /<command> [count]
+    usage: /<command> [type] [count]
     aliases: [gb]
