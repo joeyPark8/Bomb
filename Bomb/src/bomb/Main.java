@@ -220,7 +220,7 @@ public class Main extends JavaPlugin implements Listener {
                                             }
                                         }
                                         else if (args[0].equalsIgnoreCase("@local")) {
-                                            sender.sendMessage("code: " + args[3] + ", time: " + time);
+                                            player.sendMessage("code: " + args[3] + ", time: " + time);
                                         }
                                         else if (args[0].equalsIgnoreCase("@random")) {
                                             Random random = new Random();
@@ -234,6 +234,7 @@ public class Main extends JavaPlugin implements Listener {
                                             Player target = Bukkit.getPlayerExact(args[0]);
                                             if (target == null) {
                                                 player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
+                                                Bukkit.getScheduler().cancelTask(-1);
                                             }
                                             target.sendMessage("code: " + args[3] + ", time: " + time + "seconds");
                                         }
@@ -253,10 +254,12 @@ public class Main extends JavaPlugin implements Listener {
                                                 }
                                                 else {
                                                     sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                                    Bukkit.getScheduler().cancelTask(-1);
                                                 }
                                             }
                                             else {
                                                 sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                                Bukkit.getScheduler().cancelTask(-1);
                                             }
                                         }
                                     }
@@ -279,6 +282,7 @@ public class Main extends JavaPlugin implements Listener {
                                         Player target = Bukkit.getPlayerExact(args[0]);
                                         if (target == null) {
                                             player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
+                                            Bukkit.getScheduler().cancelTask(-1);
                                         }
                                         else {
                                             target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
