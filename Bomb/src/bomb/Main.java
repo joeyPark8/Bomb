@@ -231,9 +231,9 @@ public class Main extends JavaPlugin implements Listener {
                                             players[random.nextInt(players.length)].sendMessage("code: " + args[3] + ", time: " + time + "seconds");
                                         }
                                         else {
-                                            Player target = Bukkit.getPlayerExact(args[3]);
+                                            Player target = Bukkit.getPlayerExact(args[0]);
                                             if (target == null) {
-                                                player.sendMessage(ChatColor.RED + "Your target " + args[1] + " is not online");
+                                                player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
                                             }
                                             target.sendMessage("code: " + args[3] + ", time: " + time + "seconds");
                                         }
@@ -278,7 +278,7 @@ public class Main extends JavaPlugin implements Listener {
                                     else {
                                         Player target = Bukkit.getPlayerExact(args[0]);
                                         if (target == null) {
-                                            player.sendMessage(ChatColor.RED + "Your target " + args[1] + " is not online");
+                                            player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
                                         }
                                         else {
                                             target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
