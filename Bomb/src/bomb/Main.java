@@ -6,14 +6,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Main extends JavaPlugin {
-    int time;
+public class Main extends JavaPlugin implements Listener {
+    int time = 0;
+    boolean isAll = false;
+    String text = "";
+    Player tTarget = null;
 
     @Override
     public void onEnable() {
@@ -23,6 +29,7 @@ public class Main extends JavaPlugin {
         getCommand("bomb").setTabCompleter(this::onTabComplete);
 
         getCommand("timebomb").setExecutor(this::onCommand);
+        getCommand("timebomb").setTabCompleter(this::onTabComplete);
 
         getCommand("getbomb").setExecutor(this::onCommand);
     }
@@ -197,6 +204,7 @@ public class Main extends JavaPlugin {
             if (isInt(args[1])) {
                 if (Integer.parseInt(args[1]) > 0) {
                     time = Integer.parseInt(args[1]);
+                    text = args[3];
                     Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                         @Override
                         public void run() {
@@ -241,6 +249,7 @@ public class Main extends JavaPlugin {
                                             if (isInt(args[2])) {
                                                 if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
                                                     players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
+                                                    Bukkit.getScheduler().cancelTask(-1);
                                                 }
                                                 else {
                                                     sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
@@ -253,6 +262,7 @@ public class Main extends JavaPlugin {
                                     }
                                     else if (args[0].equalsIgnoreCase("@local")) {
                                         player.getWorld().createExplosion(player.getLocation(), Integer.parseInt(args[2]));
+                                        Bukkit.getScheduler().cancelTask(-1);
                                     }
                                     else if (args[0].equalsIgnoreCase("@random")) {
                                         Random random = new Random();
@@ -263,6 +273,7 @@ public class Main extends JavaPlugin {
                                         int num = random.nextInt(players.length);
 
                                         players[num].getWorld().createExplosion(players[num].getLocation(), Integer.parseInt(args[2]));
+                                        Bukkit.getScheduler().cancelTask(-1);
                                     }
                                     else {
                                         Player target = Bukkit.getPlayerExact(args[0]);
@@ -271,6 +282,7 @@ public class Main extends JavaPlugin {
                                         }
                                         else {
                                             target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
+                                            Bukkit.getScheduler().cancelTask(-1);
                                         }
                                     }
                                 }
@@ -329,6 +341,32 @@ public class Main extends JavaPlugin {
                 return targets;
             }
         }
+        else if (command.getName().equalsIgnoreCase("timebomb")) {
+            if (args.length == 1) {
+                List<String> targets = new ArrayList<>();
+                Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                Bukkit.getServer().getOnlinePlayers().toArray(players);
+
+                for (int i = 0; i < players.length; i++) {
+                    targets.add(players[i].getName());
+                }
+
+                targets.add("@all");
+                targets.add("@local");
+                targets.add("@random");
+
+                return targets;
+            }
+        }
         return null;
+    }
+
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getPlayer() == tTarget) {
+            if (event.getMessage().equalsIgnoreCase(text)) {
+                Bukkit.getScheduler().cancelTask(-1);
+            }
+        }
     }
 }
