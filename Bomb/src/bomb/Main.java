@@ -22,6 +22,8 @@ public class Main extends JavaPlugin {
         getCommand("bomb").setExecutor(this::onCommand);
         getCommand("bomb").setTabCompleter(this::onTabComplete);
 
+        getCommand("timebomb").setExecutor(this::onCommand);
+
         getCommand("getbomb").setExecutor(this::onCommand);
     }
 
@@ -50,7 +52,7 @@ public class Main extends JavaPlugin {
                     if (isInt(args[2])) {
                         if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
                             for (int i = 0; i < players.length; i++) {
-                                player.getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
+                                players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
                             }
                         }
                         else {
@@ -101,7 +103,7 @@ public class Main extends JavaPlugin {
                 else {
                     if (isInt(args[2])) {
                         if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
-                            player.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
+                            target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
                         }
                         else {
                             sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
@@ -123,7 +125,7 @@ public class Main extends JavaPlugin {
                     if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
                         for (int j = 0; j < Integer.parseInt(args[2]); j++) {
                             for (int i = 0; i < players.length; i++) {
-                                player.getWorld().spawnEntity(players[i].getLocation(), EntityType.PRIMED_TNT);
+                                players[i].getWorld().spawnEntity(players[i].getLocation(), EntityType.PRIMED_TNT);
                             }
                         }
                     }
@@ -176,7 +178,7 @@ public class Main extends JavaPlugin {
                     if (isInt(args[2])) {
                         if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
                             for (int i = 0; i < Integer.parseInt(args[2]); i++) {
-                                player.getWorld().spawnEntity(player.getLocation(), EntityType.PRIMED_TNT);
+                                target.getWorld().spawnEntity(target.getLocation(), EntityType.PRIMED_TNT);
                             }
                         }
                         else {
@@ -232,16 +234,44 @@ public class Main extends JavaPlugin {
                                 }
                                 else {
                                     if (args[0].equalsIgnoreCase("@all")) {
+                                        Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                                        Bukkit.getServer().getOnlinePlayers().toArray(players);
 
+                                        for (int i = 0; i < players.length; i++) {
+                                            if (isInt(args[2])) {
+                                                if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
+                                                    players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
+                                                }
+                                                else {
+                                                    sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                                }
+                                            }
+                                            else {
+                                                sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                            }
+                                        }
                                     }
                                     else if (args[0].equalsIgnoreCase("@local")) {
-
+                                        player.getWorld().createExplosion(player.getLocation(), Integer.parseInt(args[2]));
                                     }
                                     else if (args[0].equalsIgnoreCase("@random")) {
+                                        Random random = new Random();
 
+                                        Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                                        Bukkit.getServer().getOnlinePlayers().toArray(players);
+
+                                        int num = random.nextInt(players.length);
+
+                                        players[num].getWorld().createExplosion(players[num].getLocation(), Integer.parseInt(args[2]));
                                     }
                                     else {
-
+                                        Player target = Bukkit.getPlayerExact(args[0]);
+                                        if (target == null) {
+                                            player.sendMessage(ChatColor.RED + "Your target " + args[1] + " is not online");
+                                        }
+                                        else {
+                                            target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
+                                        }
                                     }
                                 }
                             }
