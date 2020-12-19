@@ -246,25 +246,29 @@ public class Main extends JavaPlugin implements Listener {
                                         Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                                         Bukkit.getServer().getOnlinePlayers().toArray(players);
 
-                                        for (int i = 0; i < players.length; i++) {
-                                            if (isInt(args[2])) {
-                                                if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
+                                        if (isInt(args[2])) {
+                                            if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
+                                                for (int i = 0; i < players.length; i++) {
                                                     players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
-                                                    Bukkit.getScheduler().cancelTask(-1);
-                                                }
-                                                else {
-                                                    sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                                    time = Integer.parseInt(args[1]);
                                                     Bukkit.getScheduler().cancelTask(-1);
                                                 }
                                             }
                                             else {
                                                 sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                                time = Integer.parseInt(args[1]);
                                                 Bukkit.getScheduler().cancelTask(-1);
                                             }
+                                        }
+                                        else {
+                                            sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
+                                            time = Integer.parseInt(args[1]);
+                                            Bukkit.getScheduler().cancelTask(-1);
                                         }
                                     }
                                     else if (args[0].equalsIgnoreCase("@local")) {
                                         player.getWorld().createExplosion(player.getLocation(), Integer.parseInt(args[2]));
+                                        time = Integer.parseInt(args[1]);
                                         Bukkit.getScheduler().cancelTask(-1);
                                     }
                                     else if (args[0].equalsIgnoreCase("@random")) {
@@ -276,16 +280,19 @@ public class Main extends JavaPlugin implements Listener {
                                         int num = random.nextInt(players.length);
 
                                         players[num].getWorld().createExplosion(players[num].getLocation(), Integer.parseInt(args[2]));
+                                        time = Integer.parseInt(args[1]);
                                         Bukkit.getScheduler().cancelTask(-1);
                                     }
                                     else {
                                         Player target = Bukkit.getPlayerExact(args[0]);
                                         if (target == null) {
                                             player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
+                                            time = Integer.parseInt(args[1]);
                                             Bukkit.getScheduler().cancelTask(-1);
                                         }
                                         else {
                                             target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
+                                            time = Integer.parseInt(args[1]);
                                             Bukkit.getScheduler().cancelTask(-1);
                                         }
                                     }
