@@ -35,6 +35,8 @@ public class Main extends JavaPlugin implements Listener {
 
         getCommand("getbomb").setExecutor(this::onCommand);
         getCommand("getbomb").setTabCompleter(this::onTabComplete);
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @Override
@@ -396,6 +398,8 @@ public class Main extends JavaPlugin implements Listener {
                 List<String> type = new ArrayList<>();
 
                 type.add("developing...");
+
+                return type;
             }
         }
         return null;
