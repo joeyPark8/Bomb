@@ -306,7 +306,7 @@ public class Main extends JavaPlugin implements Listener {
                                 }
                             }
                         }
-                    }.runTaskTimer(this, 1000, 1000);
+                    }.runTaskTimer(this, 0, time * 1000);
                 }
                 else {
                     sender.sendMessage(ChatColor.RED + "please write integer above 0");
