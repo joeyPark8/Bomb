@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class Main extends JavaPlugin implements Listener {
     int time = 0;
     boolean isAll = false;
     String text = "";
+    boolean sended = false;
     Player tTarget = null;
 
     @Override
@@ -32,6 +34,7 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("timebomb").setTabCompleter(this::onTabComplete);
 
         getCommand("getbomb").setExecutor(this::onCommand);
+        getCommand("getbomb").setTabCompleter(this::onTabComplete);
     }
 
     @Override
@@ -205,7 +208,7 @@ public class Main extends JavaPlugin implements Listener {
                 if (Integer.parseInt(args[1]) > 0) {
                     time = Integer.parseInt(args[1]);
                     text = args[3];
-                    Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                    new BukkitRunnable() {
                         @Override
                         public void run() {
                             if (time != -1) {
@@ -234,10 +237,13 @@ public class Main extends JavaPlugin implements Listener {
                                             Player target = Bukkit.getPlayerExact(args[0]);
                                             if (target == null) {
                                                 player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
-                                                Bukkit.getScheduler().cancelTask(-1);
+                                                cancel();
                                             }
                                             target.sendMessage("code: " + args[3] + ", time: " + time + "seconds");
                                         }
+                                    }
+                                    if (sended == true) {
+                                        cancel();
                                     }
                                     time -= 1;
                                 }
@@ -251,25 +257,25 @@ public class Main extends JavaPlugin implements Listener {
                                                 for (int i = 0; i < players.length; i++) {
                                                     players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
                                                     time = Integer.parseInt(args[1]);
-                                                    Bukkit.getScheduler().cancelTask(-1);
+                                                    cancel();
                                                 }
                                             }
                                             else {
                                                 sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
                                                 time = Integer.parseInt(args[1]);
-                                                Bukkit.getScheduler().cancelTask(-1);
+                                                cancel();
                                             }
                                         }
                                         else {
                                             sender.sendMessage(ChatColor.RED + "please write integer from 1 to 50");
                                             time = Integer.parseInt(args[1]);
-                                            Bukkit.getScheduler().cancelTask(-1);
+                                            cancel();
                                         }
                                     }
                                     else if (args[0].equalsIgnoreCase("@local")) {
                                         player.getWorld().createExplosion(player.getLocation(), Integer.parseInt(args[2]));
                                         time = Integer.parseInt(args[1]);
-                                        Bukkit.getScheduler().cancelTask(-1);
+                                        cancel();
                                     }
                                     else if (args[0].equalsIgnoreCase("@random")) {
                                         Random random = new Random();
@@ -281,25 +287,25 @@ public class Main extends JavaPlugin implements Listener {
 
                                         players[num].getWorld().createExplosion(players[num].getLocation(), Integer.parseInt(args[2]));
                                         time = Integer.parseInt(args[1]);
-                                        Bukkit.getScheduler().cancelTask(-1);
+                                        cancel();
                                     }
                                     else {
                                         Player target = Bukkit.getPlayerExact(args[0]);
                                         if (target == null) {
                                             player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
                                             time = Integer.parseInt(args[1]);
-                                            Bukkit.getScheduler().cancelTask(-1);
+                                            cancel();
                                         }
                                         else {
                                             target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
                                             time = Integer.parseInt(args[1]);
-                                            Bukkit.getScheduler().cancelTask(-1);
+                                            cancel();
                                         }
                                     }
                                 }
                             }
                         }
-                    }, 0l, (long) time * 20);
+                    }.runTaskTimer(this, 1000, 1000);
                 }
                 else {
                     sender.sendMessage(ChatColor.RED + "please write integer above 0");
@@ -369,6 +375,28 @@ public class Main extends JavaPlugin implements Listener {
                 return targets;
             }
         }
+        else if (command.getName().equalsIgnoreCase("getbomb")) {
+            if (args.length == 1) {
+                List<String> targets = new ArrayList<>();
+                Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                Bukkit.getServer().getOnlinePlayers().toArray(players);
+
+                for (int i = 0; i < players.length; i++) {
+                    targets.add(players[i].getName());
+                }
+
+                targets.add("@all");
+                targets.add("@local");
+                targets.add("@random");
+
+                return targets;
+            }
+            if (args.length == 2) {
+                List<String> type = new ArrayList<>();
+
+                type.add("developing...");
+            }
+        }
         return null;
     }
 
@@ -376,7 +404,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer() == tTarget) {
             if (event.getMessage().equalsIgnoreCase(text)) {
-                Bukkit.getScheduler().cancelTask(-1);
+                sended = true;
             }
         }
     }

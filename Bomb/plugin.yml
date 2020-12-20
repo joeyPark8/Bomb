@@ -10,5 +10,5 @@ commands:
     usage: /<command> [target] [time] [power] [text]
     aliases: [tb]
   getbomb:
-    usage: /<command> [type] [count]
+    usage: /<command> [target] [type] [count]
     aliases: [gb]
