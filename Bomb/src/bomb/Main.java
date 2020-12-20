@@ -244,6 +244,7 @@ public class Main extends JavaPlugin implements Listener {
                                     }
                                     if (sended == true) {
                                         cancel();
+                                        sended = false;
                                     }
                                     time -= 1;
                                 }
