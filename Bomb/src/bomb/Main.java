@@ -21,6 +21,7 @@ public class Main extends JavaPlugin implements Listener {
     boolean isAll = false;
     String text = "";
     boolean sended = false;
+
     Player tTarget = null;
 
     @Override
@@ -248,6 +249,7 @@ public class Main extends JavaPlugin implements Listener {
                                         cancel();
                                         sended = false;
                                     }
+                                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "time left: " + time);
                                     time -= 1;
                                 }
                                 else {
