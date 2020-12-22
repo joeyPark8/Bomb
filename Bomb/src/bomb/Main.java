@@ -18,11 +18,8 @@ import java.util.Random;
 
 public class Main extends JavaPlugin implements Listener {
     int time = 0;
-    boolean isAll = false;
     String text = "";
     boolean sended = false;
-
-    Player tTarget = null;
 
     @Override
     public void onEnable() {
@@ -245,11 +242,10 @@ public class Main extends JavaPlugin implements Listener {
                                             target.sendMessage("code: " + args[3] + ", time: " + time + "seconds");
                                         }
                                     }
-                                    if (sended == true) {
-                                        cancel();
+                                    if (sended) {
                                         sended = false;
+                                        cancel();
                                     }
-                                    sender.sendMessage(ChatColor.LIGHT_PURPLE + "time left: " + time);
                                     time -= 1;
                                 }
                                 else {
@@ -310,7 +306,7 @@ public class Main extends JavaPlugin implements Listener {
                                 }
                             }
                         }
-                    }.runTaskTimer(this, 0, time * 100);
+                    }.runTaskTimer(this, 0, time * 2);
                 }
                 else {
                     sender.sendMessage(ChatColor.RED + "please write integer above 0");
@@ -323,6 +319,12 @@ public class Main extends JavaPlugin implements Listener {
 
         //get bomb item
         else if (command.getName().equalsIgnoreCase("getbomb")) {
+            if (args.length == 0) {
+                sender.sendMessage("Do you want some bomb?");
+            }
+            else if (args[0].equalsIgnoreCase("mine")) {
+                sender.sendMessage("it is on developing...");
+            }
             return false;
         }
         return true;
@@ -399,7 +401,7 @@ public class Main extends JavaPlugin implements Listener {
             if (args.length == 2) {
                 List<String> type = new ArrayList<>();
 
-                type.add("developing...");
+                type.add("mine");
 
                 return type;
             }
@@ -409,10 +411,8 @@ public class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == tTarget) {
-            if (event.getMessage().equalsIgnoreCase(text)) {
-                sended = true;
-            }
+        if (event.getMessage().equalsIgnoreCase(text)) {
+            sended = true;
         }
     }
 }
