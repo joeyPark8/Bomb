@@ -2,7 +2,6 @@ package bomb;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -369,12 +368,12 @@ public class Main extends JavaPlugin implements Listener {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("bomb")) {
             if (args.length == 1) {
-                List<String> targets = new ArrayList<>();
-                targets.add("explosion");
-                targets.add("tnt");
+                List<String> types = new ArrayList<>();
+                types.add("explosion");
+                types.add("tnt");
 
                 List<String> result = new ArrayList<>();
-                for (String a : targets) {
+                for (String a : types) {
                     if (a.toLowerCase().startsWith(args[0].toLowerCase())) {
                         result.add(a);
                     }
@@ -395,7 +394,14 @@ public class Main extends JavaPlugin implements Listener {
                 targets.add("@local");
                 targets.add("@random");
 
-                return targets;
+                List<String> result = new ArrayList<>();
+                for (String a : targets) {
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase())) {
+                        result.add(a);
+                    }
+                }
+
+                return result;
             }
         }
         else if (command.getName().equalsIgnoreCase("timebomb")) {
@@ -412,7 +418,14 @@ public class Main extends JavaPlugin implements Listener {
                 targets.add("@local");
                 targets.add("@random");
 
-                return targets;
+                List<String> result = new ArrayList<>();
+                for (String a : targets) {
+                    if (a.toLowerCase().startsWith(args[0].toLowerCase())) {
+                        result.add(a);
+                    }
+                }
+
+                return result;
             }
         }
         else if (command.getName().equalsIgnoreCase("getbomb")) {
@@ -429,14 +442,28 @@ public class Main extends JavaPlugin implements Listener {
                 targets.add("@local");
                 targets.add("@random");
 
-                return targets;
+                List<String> result = new ArrayList<>();
+                for (String a : targets) {
+                    if (a.toLowerCase().startsWith(args[0].toLowerCase())) {
+                        result.add(a);
+                    }
+                }
+
+                return result;
             }
             if (args.length == 2) {
-                List<String> type = new ArrayList<>();
+                List<String> types = new ArrayList<>();
 
-                type.add("mine");
+                types.add("mine");
 
-                return type;
+                List<String> result = new ArrayList<>();
+                for (String a : types) {
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase())) {
+                        result.add(a);
+                    }
+                }
+
+                return result;
             }
         }
         return null;
