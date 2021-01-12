@@ -2,6 +2,7 @@ package bomb;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -319,13 +320,38 @@ public class Main extends JavaPlugin implements Listener {
 
         //get bomb item
         else if (command.getName().equalsIgnoreCase("getbomb")) {
-            if (args.length == 0) {
-                sender.sendMessage("Do you want some bomb?");
+            if (args[1].equalsIgnoreCase("@all")) {
+                Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                Bukkit.getServer().getOnlinePlayers().toArray(players);
+
+                for (Player i : players) {
+                    i.getInventory().addItem();
+                }
+
+                return false;
             }
-            else if (args[0].equalsIgnoreCase("mine")) {
-                sender.sendMessage("it is on developing...");
+            else if (args[1].equalsIgnoreCase("@local")) {
+
+                return false;
             }
-            return false;
+            else if (args[1].equalsIgnoreCase("@random")) {
+                Random random = new Random();
+
+                Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                Bukkit.getServer().getOnlinePlayers().toArray(players);
+
+                return false;
+            }
+
+            //player target
+            Player target = Bukkit.getPlayerExact(args[1]);
+            if (target == null) {
+                player.sendMessage(ChatColor.RED + "Your target " + args[1] + " is not online");
+                return false;
+            }
+            else {
+                return false;
+            }
         }
         return true;
     }
@@ -347,7 +373,14 @@ public class Main extends JavaPlugin implements Listener {
                 targets.add("explosion");
                 targets.add("tnt");
 
-                return targets;
+                List<String> result = new ArrayList<>();
+                for (String a : targets) {
+                    if (a.toLowerCase().startsWith(args[0].toLowerCase())) {
+                        result.add(a);
+                    }
+                }
+
+                return result;
             }
             if (args.length == 2) {
                 List<String> targets = new ArrayList<>();
