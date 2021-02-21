@@ -1,22 +1,70 @@
 package bomb;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Main extends JavaPlugin implements Listener {
+    Enchantment enchant = new Enchantment(NamespacedKey.minecraft("12345")) {
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public int getMaxLevel() {
+            return 1000000;
+        }
+
+        @Override
+        public int getStartLevel() {
+            return 1;
+        }
+
+        @Override
+        public EnchantmentTarget getItemTarget() {
+            return EnchantmentTarget.ALL;
+        }
+
+        @Override
+        public boolean isTreasure() {
+            return false;
+        }
+
+        @Override
+        public boolean isCursed() {
+            return false;
+        }
+
+        @Override
+        public boolean conflictsWith(Enchantment enchantment) {
+            return true;
+        }
+
+        @Override
+        public boolean canEnchantItem(ItemStack itemStack) {
+            return true;
+        }
+    };
+
+    List<Location> mineLocations = new ArrayList<>();
+
     int time = 0;
     String text = "";
     boolean sended = false;
@@ -61,8 +109,8 @@ public class Main extends JavaPlugin implements Listener {
 
                     if (isInt(args[2])) {
                         if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
-                            for (int i = 0; i < players.length; i++) {
-                                players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
+                            for (Player target : players) {
+                                target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
                             }
                         }
                         else {
@@ -134,8 +182,8 @@ public class Main extends JavaPlugin implements Listener {
 
                     if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
                         for (int j = 0; j < Integer.parseInt(args[2]); j++) {
-                            for (int i = 0; i < players.length; i++) {
-                                players[i].getWorld().spawnEntity(players[i].getLocation(), EntityType.PRIMED_TNT);
+                            for (Player target : players) {
+                                target.getWorld().spawnEntity(target.getLocation(), EntityType.PRIMED_TNT);
                             }
                         }
                     }
@@ -218,8 +266,8 @@ public class Main extends JavaPlugin implements Listener {
                                             Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                                             Bukkit.getServer().getOnlinePlayers().toArray(players);
 
-                                            for (int i = 0; i < players.length; i++) {
-                                                players[i].sendMessage("code: " + args[3] + ", time: " + time);
+                                            for (Player target : players) {
+                                                target.sendMessage("code: " + args[3] + ", time: " + time);
                                             }
                                         }
                                         else if (args[0].equalsIgnoreCase("@local")) {
@@ -255,8 +303,8 @@ public class Main extends JavaPlugin implements Listener {
 
                                         if (isInt(args[2])) {
                                             if (Integer.parseInt(args[2]) > 0 && Integer.parseInt(args[2]) < 51) {
-                                                for (int i = 0; i < players.length; i++) {
-                                                    players[i].getWorld().createExplosion(players[i].getLocation(), Integer.parseInt(args[2]));
+                                                for (Player target : players) {
+                                                    target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
                                                     time = Integer.parseInt(args[1]);
                                                     cancel();
                                                 }
@@ -294,14 +342,12 @@ public class Main extends JavaPlugin implements Listener {
                                         Player target = Bukkit.getPlayerExact(args[0]);
                                         if (target == null) {
                                             player.sendMessage(ChatColor.RED + "Your target " + args[0] + " is not online");
-                                            time = Integer.parseInt(args[1]);
-                                            cancel();
                                         }
                                         else {
                                             target.getWorld().createExplosion(target.getLocation(), Integer.parseInt(args[2]));
-                                            time = Integer.parseInt(args[1]);
-                                            cancel();
                                         }
+                                        time = Integer.parseInt(args[1]);
+                                        cancel();
                                     }
                                 }
                             }
@@ -319,21 +365,42 @@ public class Main extends JavaPlugin implements Listener {
 
         //get bomb item
         else if (command.getName().equalsIgnoreCase("getbomb")) {
-            if (args[1].equalsIgnoreCase("@all")) {
-                Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
-                Bukkit.getServer().getOnlinePlayers().toArray(players);
+            if (args[0].equalsIgnoreCase("@all")) {
+                if (args[1].equalsIgnoreCase("mine")) {
+                    Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
+                    Bukkit.getServer().getOnlinePlayers().toArray(players);
 
-                for (Player i : players) {
-                    i.getInventory().addItem();
+                    ItemStack mine = new ItemStack(Material.FLOWER_POT);
+                    ItemMeta meta = mine.getItemMeta();
+
+                    meta.setDisplayName("mine");
+                    meta.addEnchant(enchant, 1, true);
+
+                    for (Player i : players) {
+                        i.getInventory().addItem(mine);
+                    }
                 }
-
+                else {
+                    player.sendMessage(ChatColor.RED + "Unknown type of bomb");
+                }
                 return false;
             }
-            else if (args[1].equalsIgnoreCase("@local")) {
+            else if (args[0].equalsIgnoreCase("@local")) {
+                if (args[1].equalsIgnoreCase("mine")) {
+                    ItemStack mine = new ItemStack(Material.FLOWER_POT);
+                    ItemMeta meta = mine.getItemMeta();
 
+                    meta.setDisplayName("mine");
+                    meta.addEnchant(enchant, 1, true);
+
+                    player.getInventory().addItem(mine);
+                }
+                else {
+                    player.sendMessage(ChatColor.RED + "Unknown type of bomb");
+                }
                 return false;
             }
-            else if (args[1].equalsIgnoreCase("@random")) {
+            else if (args[0].equalsIgnoreCase("@random")) {
                 Random random = new Random();
 
                 Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
@@ -346,11 +413,8 @@ public class Main extends JavaPlugin implements Listener {
             Player target = Bukkit.getPlayerExact(args[1]);
             if (target == null) {
                 player.sendMessage(ChatColor.RED + "Your target " + args[1] + " is not online");
-                return false;
             }
-            else {
-                return false;
-            }
+            return false;
         }
         return true;
     }
@@ -386,8 +450,8 @@ public class Main extends JavaPlugin implements Listener {
                 Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                 Bukkit.getServer().getOnlinePlayers().toArray(players);
 
-                for (int i = 0; i < players.length; i++) {
-                    targets.add(players[i].getName());
+                for (Player player : players) {
+                    targets.add(player.getName());
                 }
 
                 targets.add("@all");
@@ -410,8 +474,8 @@ public class Main extends JavaPlugin implements Listener {
                 Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                 Bukkit.getServer().getOnlinePlayers().toArray(players);
 
-                for (int i = 0; i < players.length; i++) {
-                    targets.add(players[i].getName());
+                for (Player player : players) {
+                    targets.add(player.getName());
                 }
 
                 targets.add("@all");
@@ -434,8 +498,8 @@ public class Main extends JavaPlugin implements Listener {
                 Player[] players = new Player[Bukkit.getServer().getOnlinePlayers().size()];
                 Bukkit.getServer().getOnlinePlayers().toArray(players);
 
-                for (int i = 0; i < players.length; i++) {
-                    targets.add(players[i].getName());
+                for (Player player : players) {
+                    targets.add(player.getName());
                 }
 
                 targets.add("@all");
@@ -473,6 +537,30 @@ public class Main extends JavaPlugin implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.getMessage().equalsIgnoreCase(text)) {
             sended = true;
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        ItemMeta meta = event.getItem().getItemMeta();
+        if (meta.getDisplayName().equalsIgnoreCase("mine")) {
+            if (meta.getEnchants().containsKey(enchant)) {
+                if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                    Player player = event.getPlayer();
+                    Block targetBlock = player.getTargetBlock(null, 50);
+
+                    if (!targetBlock.getType().isAir()) {
+                        if (mineLocations.contains(targetBlock.getLocation())) {
+                            mineLocations.add(targetBlock.getLocation());
+                            player.sendMessage(ChatColor.GREEN + "Set mine at " + targetBlock.getLocation());
+                        }
+                        else {
+                            player.sendMessage(ChatColor.RED + "Mine already exists at " + targetBlock.getLocation());
+                        }
+                    }
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 }
